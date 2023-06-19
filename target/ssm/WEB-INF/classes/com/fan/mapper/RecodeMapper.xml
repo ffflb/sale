@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fan.mapper.RecodeMapper">
+
+    <delete id="delRecode">
+        delete  from tb_recode where id = #{id}
+    </delete>
+
+    <insert id="insert" parameterType="recode">
+        insert into tb_recode(sort_id, order_name,order_desc,apple, operation) values (#{sortId},#{orderName}, #{orderDesc},#{apple},#{operation})
+    </insert>
+
+    <select id="getAllRecode" parameterType="recode" resultType="RecodeAndSort">
+
+        select tb_recode.id, tb_sort.sort_name as sortName, tb_recode.order_name as orderName,
+        tb_recode.order_desc as orderDesc,  tb_recode.apple,tb_recode.operation
+        from tb_recode left join tb_sort
+        on tb_recode.sort_id = tb_sort.sort_id
+        <where>
+            <if test="orderName!=null and orderName!=''">
+                and tb_recode.order_name like concat('%',#{orderName},'%')
+            </if>
+        </where>
+    </select>
+
+
+    <insert id="insertBatch" parameterType="recode">
+        insert into tb_recode(sort_id, order_name,order_desc,apple, operation) values
+        <foreach collection="list" item="test" separator=",">
+            (#{test.sortId},
+            #{test.orderName},
+            #{test.orderDesc},
+            #{test.apple},
+            #{test.operation})
+        </foreach>
+    </insert>
+
+    <delete id="delBatchRecode">
+        delete from tb_recode where id in
+        <foreach collection="array" open="(" separator="," close=")" item="temp">
+            #{temp}
+        </foreach>
+    </delete>
+</mapper>

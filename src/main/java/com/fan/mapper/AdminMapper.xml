@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fan.mapper.AdminMapper">
+
+    <select id="login" resultType="admin">
+        select id, img, admin_name as adminName from tb_admin where admin_name = #{adminName} and admin_pwd = #{adminPwd}
+    </select>
+
+
+    <select id="getById" resultType="admin">
+        select id, img, admin_name as adminName, admin_pwd as adminPwd, admin_tel as adminTel, address from tb_admin where id = #{id}
+    </select>
+
+
+    <update id="update" parameterType="admin">
+        update tb_admin set img = #{img},admin_name = #{adminName}, admin_pwd = #{adminPwd}, admin_tel = #{adminTel}, address = #{address} where id = #{id}
+    </update>
+
+</mapper>

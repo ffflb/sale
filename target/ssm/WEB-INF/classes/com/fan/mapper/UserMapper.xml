@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fan.mapper.UserMapper">
+
+    <select id="login" resultType="user">
+        select id, img, user_name as userName from tb_user where user_name = #{userName} and user_pwd = #{userPwd}
+    </select>
+
+    <select id="getUserListByParam" resultType="user">
+        select id,img, user_name as userName, user_pwd as userPwd, user_tel as userTel, address
+        from tb_user
+        <where>
+            <if test="userName!=null and userName!=''">
+
+                tb_user.user_name like concat('%',#{userName},'%')
+            </if>
+
+        </where>
+    </select>
+
+    <insert id="insert" parameterType="user">
+        insert into tb_user(user_name,user_pwd, user_tel,address) values (#{userName},#{userPwd}, #{userTel},#{address})
+    </insert>
+
+
+<select id="getById" resultType="user">
+    select id,img,user_name as userName, user_pwd as userPwd, user_tel as userTel, address from tb_user where id = #{id}
+</select>
+
+
+<update id="update" parameterType="user">
+    update tb_user set img = #{img}, user_name = #{userName}, user_pwd = #{userPwd}, user_tel = #{userTel}, address = #{address} where id = #{id}
+</update>
+
+<select id="getAllUser" parameterType="user" resultType="user">
+
+    select id, img, user_name as userName, user_pwd as userPwd, user_tel as userTel, address from tb_user
+    <where>
+        <if test="userName!=null and userName!=''">
+            and user_name like concat('%',#{userName},'%')
+        </if>
+    </where>
+
+</select>
+
+<delete id="delUser">
+    delete from tb_user where id = #{id}
+</delete>
+
+    <delete id="delBatchUser">
+        delete from tb_user where id in
+        <foreach collection="array" open="(" separator="," close=")" item="temp">
+            #{temp}
+        </foreach>
+    </delete>
+</mapper>

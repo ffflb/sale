@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fan.mapper.OrderMapper">
+
+    <select id="getAllOrder" parameterType="order" resultType="OrderAndSort">
+
+        select tb_order.id, tb_sort.sort_name as sortName, tb_order.order_name as orderName, tb_order.order_desc as orderDesc, tb_order.order_status as orderStatus, tb_order.apple
+        from tb_order left join tb_sort
+        on tb_order.sort_id = tb_sort.sort_id where tb_order.order_status = 1 and tb_order.apple = #{apple}
+
+        <if test="orderName!=null and orderName!=''">
+            and tb_order.order_name like concat('%',#{orderName},'%')
+        </if>
+
+    </select>
+
+    <select id="getAll" parameterType="order" resultType="OrderAndSort">
+
+        select tb_order.id, tb_sort.sort_name as sortName, tb_order.order_name as orderName, tb_order.order_desc as orderDesc, tb_order.order_status as orderStatus, tb_order.apple
+        from tb_order left join tb_sort
+        on tb_order.sort_id = tb_sort.sort_id
+       <where>
+           <if test="orderName!=null and orderName!=''">
+               and tb_order.order_name like concat('%',#{orderName},'%')
+           </if>
+       </where>
+    </select>
+
+    <update id="delOrder">
+        update tb_order set order_status = 0 where id = #{id}
+    </update>
+
+
+    <select id="getById" resultType="order">
+        select id,sort_id as sortId, order_name as orderName , order_desc as orderDesc, order_status as orderStatus, apple from tb_order where id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="order">
+        insert into tb_order(sort_id, order_name,order_desc, order_status,apple) values (#{sortId},#{orderName}, #{orderDesc},#{orderStatus},#{apple})
+    </insert>
+
+    <update id="update" parameterType="order">
+        update tb_order set order_name = #{orderName}, order_desc = #{orderDesc}, sort_id = #{sortId} where id = #{id}
+    </update>
+
+
+    <delete id="delOrderStatus" parameterType="order">
+        delete from tb_order where  id = #{id}
+    </delete>
+
+    <select id="getEchartsDate" resultType="EchartsData">
+        select t.sort_name as name, sum(t.count) as value
+        from
+            (
+            ( select sort_name, COUNT(1) as count
+            from tb_order
+            left join tb_sort on tb_order.sort_id = tb_sort.sort_id
+            group by tb_order.sort_id )
+            union all
+            ( select sort_name, COUNT(1) as count
+            from tb_recode
+            left join tb_sort on tb_recode.sort_id = tb_sort.sort_id
+            group by tb_recode.sort_id )
+            ) t
+            group by t.sort_name;
+    </select>
+
+
+<!--    //用户批量删除-->
+    <update id="delBatchOrder">
+        update tb_order set order_status = 0 where id in
+        <foreach collection="array" open="(" separator="," close=")" item="temp">
+            #{temp}
+        </foreach>
+    </update>
+
+    <delete id="delBatchOrderStatus">
+        delete from tb_order where id in
+        <foreach collection="array" open="(" separator="," close=")" item="temp">
+            #{temp}
+        </foreach>
+    </delete>
+
+<!--    <update id="delBatchOrderStatus">-->
+<!--        update tb_order set order_status = 0 where id in-->
+<!--        <foreach collection="array" open="(" separator="," close=")" item="temp">-->
+<!--            #{temp}-->
+<!--        </foreach>-->
+<!--    </update>-->
+</mapper>
